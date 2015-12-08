@@ -27,23 +27,23 @@ describe 'network configuration' do
       expect {
         address = dns.getaddress("0.batlight.static.bat.#{bosh_tld}").to_s
       }.not_to raise_error, 'this test tries to resolve to the public IP of director, so you need to have incoming UDP enabled for it'
-      expect(address).to eq(public_ip)
+      expect(address).to eq(public_ip_v2)
     end
 
     it 'reverse looks up instance' do
-      names = dns.getnames(public_ip)
+      names = dns.getnames(public_ip_v2)
       expect(names.to_s).to include("0.batlight.static.bat.#{bosh_tld}.")
     end
 
     it 'resolves instance names from deployed VM' do
       # Temporarily add to debug why dig is returning 'connection timed out'
-      resolv_conf = ssh(public_ip, 'vcap', 'cat /etc/resolv.conf', ssh_options)
+      resolv_conf = ssh(public_ip_v2, 'vcap', 'cat /etc/resolv.conf', ssh_options)
       @logger.info("Contents of resolv.conf '#{resolv_conf}'")
 
       bosh('logs batlight 0 --agent --dir /tmp')
 
       cmd = 'dig +short 0.batlight.static.bat.bosh a 0.batlight.static.bat.microbosh a'
-      expect(ssh(public_ip, 'vcap', cmd, ssh_options)).to include(public_ip)
+      expect(ssh(public_ip_v2, 'vcap', cmd, ssh_options)).to include(public_ip)
     end
   end
 
@@ -67,7 +67,7 @@ describe 'network configuration' do
     it 'successfully reconfigures VM with new DNS nameservers' do
       expect(bosh("deployment #{manifest_with_different_dns.to_path}")).to succeed
       expect(bosh('deploy')).to succeed
-      expect(ssh(public_ip, 'vcap', 'cat /etc/resolv.conf', ssh_options)).to include('127.0.0.5')
+      expect(ssh(public_ip_v2, 'vcap', 'cat /etc/resolv.conf', ssh_options)).to include('127.0.0.5')
     end
   end
 
@@ -86,7 +86,7 @@ describe 'network configuration' do
       expect(bosh("deployment #{deployment.to_path}")).to succeed
       expect(bosh('deploy')).to succeed
 
-      expect(ssh(public_ip, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(second_static_ip)
+      expect(ssh(public_ip_v2, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(second_static_ip)
     end
 
     it 'deploys multiple manual networks' do
@@ -99,8 +99,8 @@ describe 'network configuration' do
       expect(bosh("deployment #{deployment.to_path}")).to succeed
       expect(bosh('deploy')).to succeed
 
-      expect(ssh(public_ip, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(static_ips[0])
-      expect(ssh(public_ip, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(static_ips[1])
+      expect(ssh(public_ip_v2, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(static_ips[0])
+      expect(ssh(public_ip_v2, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(static_ips[1])
     end
   end
 end
