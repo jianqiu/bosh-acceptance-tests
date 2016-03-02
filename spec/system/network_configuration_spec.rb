@@ -22,7 +22,10 @@ describe 'network configuration' do
 
     let(:dns) { Resolv::DNS.new(nameserver: @env.dns_host) }
 
+    @logger.info("WJQ: dns host: '#{@env.dns_host}'")
+
     it 'forward looks up instance' do
+      @logger.info("WJQ: public ip v2: '#{public_ip_v2}'")
       address = nil
       expect {
         address = dns.getaddress("0.batlight.static.bat.#{bosh_tld}").to_s
@@ -43,7 +46,7 @@ describe 'network configuration' do
       bosh('logs batlight 0 --agent --dir /tmp')
 
       cmd = 'dig +short 0.batlight.static.bat.bosh a 0.batlight.static.bat.microbosh a'
-      expect(ssh(public_ip_v2, 'vcap', cmd, ssh_options)).to include(public_ip)
+      expect(ssh(public_ip_v2, 'vcap', cmd, ssh_options)).to include(public_ip_v2)
     end
   end
 
