@@ -79,7 +79,7 @@ describe 'network configuration' do
       skip "not using manual networking" unless manual_networking?
     end
 
-    it 'changes static IP address' do
+    xit 'changes static IP address' do
       unless @requirements.stemcell.supports_changing_static_ip?(network_type)
         skip "network reconfiguration does not work for #{@requirements.stemcell}"
       end
@@ -92,7 +92,7 @@ describe 'network configuration' do
       expect(ssh(public_ip_v2, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(second_static_ip)
     end
 
-    it 'deploys multiple manual networks' do
+    xit 'deploys multiple manual networks' do
       unless @requirements.stemcell.supports_multiple_manual_networks?
         skip "multiple manual networks are not supported for #{@requirements.stemcell}"
       end
