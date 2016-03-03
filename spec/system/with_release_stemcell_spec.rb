@@ -31,7 +31,7 @@ describe 'with release and stemcell and subsequent deployments' do
     end
 
     it 'creates ephemeral and swap partitions on the root device if no ephemeral disk', ssh: true do
-      setting_value = agent_config(public_ip).
+      setting_value = agent_config(public_ip_v2).
         fetch('Platform', {}).
         fetch('Linux', {}).
         fetch('CreatePartitionIfNoEphemeralDisk', false)
@@ -39,10 +39,10 @@ describe 'with release and stemcell and subsequent deployments' do
       skip 'root disk ephemeral partition requires a stemcell with CreatePartitionIfNoEphemeralDisk enabled' unless setting_value
 
       # expect ephemeral mount point to be a mounted partition on the root disk
-      expect(mounts(public_ip)).to include(hash_including('path' => '/var/vcap/data'))
+      expect(mounts(public_ip_v2)).to include(hash_including('path' => '/var/vcap/data'))
 
       # expect swap to be a mounted partition on the root disk
-      expect(swaps(public_ip)).to include(hash_including('type' => 'partition'))
+      expect(swaps(public_ip_v2)).to include(hash_including('type' => 'partition'))
     end
 
     def agent_config(ip)
@@ -97,7 +97,7 @@ describe 'with release and stemcell and subsequent deployments' do
     end
 
     it 'should set vcap password', ssh: true do
-      expect(ssh_sudo(public_ip, 'vcap', 'whoami', @our_ssh_options)).to eq("root\n")
+      expect(ssh_sudo(public_ip_v2, 'vcap', 'whoami', @our_ssh_options)).to eq("root\n")
     end
 
     it 'should not change the deployment on a noop' do
@@ -112,7 +112,7 @@ describe 'with release and stemcell and subsequent deployments' do
     it 'should use job colocation', ssh: true do
       @jobs.each do |job|
         grep_cmd = "ps -ef | grep #{job} | grep -v grep"
-        expect(ssh(public_ip, 'vcap', grep_cmd, @our_ssh_options)).to match /#{job}/
+        expect(ssh(public_ip_v2, 'vcap', grep_cmd, @our_ssh_options)).to match /#{job}/
       end
     end
 
@@ -122,7 +122,7 @@ describe 'with release and stemcell and subsequent deployments' do
       vm = wait_for_vm('colocated/0')
       expect(vm).to_not be_nil
       expect(static_ip).to_not be_nil
-      expect(ssh(public_ip, 'vcap', 'hostname', @our_ssh_options)).to match /#{vm[:agent_id]}/
+      expect(ssh(public_ip_v2, 'vcap', 'hostname', @our_ssh_options)).to match /#{vm[:agent_id]}/
     end
 
     it 'should have network access to the vm using the vip' do
@@ -138,9 +138,9 @@ describe 'with release and stemcell and subsequent deployments' do
       SAVE_FILE = '/var/vcap/store/batarang/save'
 
       before(:all) do
-        ssh(public_ip, 'vcap', "echo 'foobar' > #{SAVE_FILE}", @our_ssh_options)
+        ssh(public_ip_v2, 'vcap', "echo 'foobar' > #{SAVE_FILE}", @our_ssh_options)
         unless warden?
-          @size = persistent_disk(public_ip, 'vcap', @our_ssh_options)
+          @size = persistent_disk(public_ip_v2, 'vcap', @our_ssh_options)
         end
         use_persistent_disk(4096)
         @requirements.requirement(deployment, @spec, force: true)
@@ -149,9 +149,9 @@ describe 'with release and stemcell and subsequent deployments' do
       it 'should migrate disk contents', ssh: true do
         # Warden df don't work so skip the persistent disk size check
         unless warden?
-          expect(persistent_disk(public_ip, 'vcap', @our_ssh_options)).to_not eq(@size)
+          expect(persistent_disk(public_ip_v2, 'vcap', @our_ssh_options)).to_not eq(@size)
         end
-        expect(ssh(public_ip, 'vcap', "cat #{SAVE_FILE}", @our_ssh_options)).to match /foobar/
+        expect(ssh(public_ip_v2, 'vcap', "cat #{SAVE_FILE}", @our_ssh_options)).to match /foobar/
       end
     end
   end

@@ -29,7 +29,7 @@ describe 'raw_instance_storage' do
 
   it 'should attach all available instance disks and label them', ssh: true do
     # assumes aws.yml.erb specifies instance_type: m3.medium, which has 1 local disk
-    expect(labeled_partitions(public_ip)).to eq(["raw-ephemeral-0"])
+    expect(labeled_partitions(public_ip_v2)).to eq(["raw-ephemeral-0"])
   end
 
   def labeled_partitions(ip)
