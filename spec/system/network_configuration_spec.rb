@@ -17,7 +17,7 @@ describe 'network configuration' do
     @requirements.cleanup(deployment)
   end
 
-  describe 'resolving DNS entries' do
+  xdescribe 'resolving DNS entries' do
     before { skip 'director not configured with dns' unless dns? }
 
     let(:dns) { Resolv::DNS.new(nameserver: @env.dns_host) }
@@ -49,7 +49,7 @@ describe 'network configuration' do
     end
   end
 
-  describe 'changing instance DNS' do
+  xdescribe 'changing instance DNS' do
     before do
       skip 'director not configured with dns' unless dns?
       unless @requirements.stemcell.supports_network_reconfiguration?
@@ -73,12 +73,12 @@ describe 'network configuration' do
     end
   end
 
-  context 'when using manual networking' do
+  xcontext 'when using manual networking' do
     before do
       skip "not using manual networking" unless manual_networking?
     end
 
-    xit 'changes static IP address' do
+    it 'changes static IP address' do
       unless @requirements.stemcell.supports_changing_static_ip?(network_type)
         skip "network reconfiguration does not work for #{@requirements.stemcell}"
       end
@@ -91,7 +91,7 @@ describe 'network configuration' do
       expect(ssh(public_ip_v2, 'vcap', 'PATH=/sbin:/usr/sbin:$PATH; ifconfig', ssh_options)).to include(second_static_ip)
     end
 
-    xit 'deploys multiple manual networks' do
+    it 'deploys multiple manual networks' do
       unless @requirements.stemcell.supports_multiple_manual_networks?
         skip "multiple manual networks are not supported for #{@requirements.stemcell}"
       end
