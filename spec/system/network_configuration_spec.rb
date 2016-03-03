@@ -22,9 +22,8 @@ describe 'network configuration' do
 
     let(:dns) { Resolv::DNS.new(nameserver: @env.dns_host) }
 
-    @logger.info("WJQ: dns host: '#{@env.dns_host}'")
-
     it 'forward looks up instance' do
+      @logger.info("WJQ: env: '#{@env}'")
       @logger.info("WJQ: public ip v2: '#{public_ip_v2}'")
       address = nil
       expect {
