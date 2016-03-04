@@ -17,24 +17,22 @@ describe 'network configuration' do
     @requirements.cleanup(deployment)
   end
 
-  xdescribe 'resolving DNS entries' do
+  describe 'resolving DNS entries' do
     before { skip 'director not configured with dns' unless dns? }
 
     let(:dns) { Resolv::DNS.new(nameserver: @env.dns_host) }
 
     it 'forward looks up instance' do
-      @logger.info("WJQ: env: '#{@env.inspect}'")
-      @logger.info("WJQ: public ip v2: '#{public_ip_v2}'")
       address = nil
       expect {
-        address = dns.getaddress("0.batlight.static.bat.#{bosh_tld}").to_s
+        address = dns.getaddress("0.batlight.dynamic.bat.#{bosh_tld}").to_s
       }.not_to raise_error, 'this test tries to resolve to the public IP of director, so you need to have incoming UDP enabled for it'
       expect(address).to eq(public_ip_v2)
     end
 
     it 'reverse looks up instance' do
       names = dns.getnames(public_ip_v2)
-      expect(names.to_s).to include("0.batlight.static.bat.#{bosh_tld}.")
+      expect(names.to_s).to include("0.batlight.dynamic.bat.#{bosh_tld}.")
     end
 
     it 'resolves instance names from deployed VM' do
@@ -49,7 +47,7 @@ describe 'network configuration' do
     end
   end
 
-  xdescribe 'changing instance DNS' do
+  describe 'changing instance DNS' do
     before do
       skip 'director not configured with dns' unless dns?
       unless @requirements.stemcell.supports_network_reconfiguration?
@@ -73,7 +71,7 @@ describe 'network configuration' do
     end
   end
 
-  xcontext 'when using manual networking' do
+  context 'when using manual networking' do
     before do
       skip "not using manual networking" unless manual_networking?
     end
