@@ -1,6 +1,6 @@
 require 'system/spec_helper'
 
-describe 'with release and stemcell and subsequent deployments' do
+fdescribe 'with release and stemcell and subsequent deployments' do
   before(:all) do
     @requirements.requirement(@requirements.release)
     @requirements.requirement(@requirements.stemcell)
@@ -87,7 +87,7 @@ describe 'with release and stemcell and subsequent deployments' do
       ]
       use_job('colocated')
       use_templates(%w[batarang batlight])
-      use_persistent_disk(2048)
+      use_persistent_disk(20480)
 
       @requirements.requirement(deployment, @spec)
     end
@@ -142,7 +142,7 @@ describe 'with release and stemcell and subsequent deployments' do
         unless warden?
           @size = persistent_disk(public_ip_v2, 'vcap', @our_ssh_options)
         end
-        use_persistent_disk(4096)
+        use_persistent_disk(40960)
         @requirements.requirement(deployment, @spec, force: true)
       end
 

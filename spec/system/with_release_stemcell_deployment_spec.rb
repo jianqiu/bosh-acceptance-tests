@@ -90,7 +90,7 @@ describe 'with release, stemcell and deployment' do
     # Additionally, this test uses before(:all). This means the director is deployed once for this
     # entire file. This test leaves the deployment in a deleted state, which will cause
     # other tests in an unexpected initial state.
-    xit 'should restore director DB' do
+    it 'should restore director DB' do
       with_tmpdir do
         expect(bosh_safe('backup one_deployment.tgz')).to succeed_with /Backup of BOSH director was put in.*one_deployment\.tgz/
         expect(bosh_safe("delete deployment #{deployment_name}")).to succeed_with /Deleted deployment/
