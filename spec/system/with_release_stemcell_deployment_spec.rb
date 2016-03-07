@@ -84,7 +84,7 @@ describe 'with release, stemcell and deployment' do
     end
   end
 
-  describe 'restore' do
+  xdescribe 'restore' do
     # This test is marked pending because it breaks CI.
     # This test fails in various ways, usually in one of the 'deployments' verifications
     # Additionally, this test uses before(:all). This means the director is deployed once for this
