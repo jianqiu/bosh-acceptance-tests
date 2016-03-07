@@ -1,6 +1,6 @@
 require 'system/spec_helper'
 
-describe 'back and restore deployment' do
+skip 'back and restore deployment' do
   before(:all) do
     @requirements.requirement(@requirements.stemcell)
     @requirements.requirement(@requirements.release)
