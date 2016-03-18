@@ -21,7 +21,7 @@ describe 'with release, stemcell and deployment' do
     it 'should survive agent dying', ssh: true do
       Dir.mktmpdir do |tmpdir|
         ssh(public_ip_v2, 'vcap', "echo #{@env.vcap_password} | sudo -S pkill -9 agent", ssh_options)
-        wait_for_vm('batlight/0')
+        wait_for_vm_state('batlight/0', 'running')
         expect(bosh_safe("logs batlight 0 --agent --dir #{tmpdir}")).to succeed
       end
     end
@@ -80,26 +80,6 @@ describe 'with release, stemcell and deployment' do
         files = tar_contents(tarfile)
         expect(files).to include './batlight/batlight.stdout.log'
         expect(files).to include './batlight/batlight.stderr.log'
-      end
-    end
-  end
-
-  xdescribe 'restore' do
-    # This test is marked pending because it breaks CI.
-    # This test fails in various ways, usually in one of the 'deployments' verifications
-    # Additionally, this test uses before(:all). This means the director is deployed once for this
-    # entire file. This test leaves the deployment in a deleted state, which will cause
-    # other tests in an unexpected initial state.
-    it 'should restore director DB' do
-      with_tmpdir do
-        expect(bosh_safe('backup one_deployment.tgz')).to succeed_with /Backup of BOSH director was put in.*one_deployment\.tgz/
-        expect(bosh_safe("delete deployment #{deployment_name}")).to succeed_with /Deleted deployment/
-        expect(bosh_safe('backup no_deployment.tgz')).to succeed_with /Backup of BOSH director was put in.*no_deployment\.tgz/
-        expect(bosh_safe('restore one_deployment.tgz')).to succeed_with /Restore done!/
-        expect(bosh_safe('deployments')).to succeed_with /#{deployment_name}/
-        expect(bosh_safe('restore no_deployment.tgz')).to succeed_with /Restore done!/
-        result = bosh_safe('deployments')
-        expect(result.output).to match_regex(/No deployments/)
       end
     end
   end
